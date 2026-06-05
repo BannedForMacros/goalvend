@@ -1,9 +1,10 @@
 "use client";
 
-import { infoEstado } from "@/lib/kpi";
+import { infoEstado } from "@/components/kpi/estado";
 
 export function CumplimientoGauge({ pct }: { pct: number }) {
   const info = infoEstado(pct);
+  const Icon = info.icon;
   const clamped = Math.max(0, Math.min(100, pct));
   const radius = 70;
   const circ = 2 * Math.PI * radius;
@@ -35,14 +36,15 @@ export function CumplimientoGauge({ pct }: { pct: number }) {
         </div>
       </div>
       <div
-        className="rounded-full border px-3 py-1 text-sm font-medium"
+        className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium"
         style={{
           color: info.color,
           borderColor: `color-mix(in srgb, ${info.color} 35%, transparent)`,
           backgroundColor: `color-mix(in srgb, ${info.color} 12%, transparent)`,
         }}
       >
-        {info.emoji} {info.label}
+        <Icon className="size-4" />
+        {info.label}
       </div>
     </div>
   );

@@ -14,7 +14,7 @@ function randInt(min: number, max: number) {
 }
 
 async function main() {
-  console.log("🌱 Sembrando datos de GoalVend...");
+  console.log("Sembrando datos de GoalVend...");
 
   // Limpieza (orden por dependencias)
   await prisma.alerta.deleteMany();
@@ -210,8 +210,8 @@ async function main() {
     },
   });
 
-  console.log(`✅ Listo: ${vendedores.length} vendedores, ${clientes.length} clientes, ${productos.length} productos, ${totalVentas} ventas.`);
-  console.log("👤 Admin: admin@goalvend.pe / admin123");
+  console.log(`Listo: ${vendedores.length} vendedores, ${clientes.length} clientes, ${productos.length} productos, ${totalVentas} ventas.`);
+  console.log("Admin: admin@goalvend.pe / admin123");
 }
 
 main()

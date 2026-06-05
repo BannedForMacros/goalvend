@@ -5,6 +5,7 @@ import { formatMoneda, formatNumero } from "@/lib/format";
 import { PageHeader } from "@/components/ui/page-header";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { CumplimientoGauge } from "@/components/dashboard/cumplimiento-gauge";
+import { EstadoIcono } from "@/components/kpi/estado";
 import { VentasAreaChart } from "@/components/charts/ventas-area-chart";
 import { RankingBarChart } from "@/components/charts/ranking-bar-chart";
 import { SegmentoDonutChart } from "@/components/charts/segmento-donut-chart";
@@ -73,15 +74,21 @@ export default async function DashboardPage() {
             <div className="mt-4 grid grid-cols-3 gap-2 text-center text-sm">
               <div className="rounded-lg bg-success/10 p-2">
                 <p className="text-lg font-bold text-success">{d.semaforo.alto}</p>
-                <p className="text-xs text-muted-foreground">🟢 Alto</p>
+                <p className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                  <EstadoIcono estado="ALTO" className="size-3.5" /> Alto
+                </p>
               </div>
               <div className="rounded-lg bg-warning/10 p-2">
                 <p className="text-lg font-bold text-warning">{d.semaforo.moderado}</p>
-                <p className="text-xs text-muted-foreground">🟡 Moderado</p>
+                <p className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                  <EstadoIcono estado="MODERADO" className="size-3.5" /> Moderado
+                </p>
               </div>
               <div className="rounded-lg bg-danger/10 p-2">
                 <p className="text-lg font-bold text-danger">{d.semaforo.bajo}</p>
-                <p className="text-xs text-muted-foreground">🔴 Bajo</p>
+                <p className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
+                  <EstadoIcono estado="BAJO" className="size-3.5" /> Bajo
+                </p>
               </div>
             </div>
           </CardContent>

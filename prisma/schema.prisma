@@ -54,9 +54,9 @@ enum PeriodoMeta {
 
 // Semáforo de cumplimiento (Módulo 4)
 enum EstadoKpi {
-  ALTO // 🟢 Alto desempeño
-  MODERADO // 🟡 Rendimiento moderado
-  BAJO // 🔴 Bajo cumplimiento
+  ALTO // Alto desempeño
+  MODERADO // Rendimiento moderado
+  BAJO // Bajo cumplimiento
 }
 
 enum NivelAlerta {

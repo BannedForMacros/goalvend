@@ -29,40 +29,6 @@ export function estadoCumplimiento(pct: number): EstadoKpi {
   return "BAJO";
 }
 
-interface EstadoMeta {
-  label: string;
-  emoji: string;
-  /** Clase de color de marca (token CSS) */
-  color: string;
-  badgeClass: string;
-}
-
-export const ESTADO_META: Record<EstadoKpi, EstadoMeta> = {
-  ALTO: {
-    label: "Alto desempeño",
-    emoji: "🟢",
-    color: "var(--brand-green)",
-    badgeClass: "bg-success/15 text-success border-success/30",
-  },
-  MODERADO: {
-    label: "Rendimiento moderado",
-    emoji: "🟡",
-    color: "var(--brand-orange)",
-    badgeClass: "bg-warning/15 text-warning border-warning/30",
-  },
-  BAJO: {
-    label: "Bajo cumplimiento",
-    emoji: "🔴",
-    color: "var(--brand-magenta)",
-    badgeClass: "bg-danger/15 text-danger border-danger/30",
-  },
-};
-
-export function infoEstado(pct: number): EstadoMeta & { estado: EstadoKpi; pct: number } {
-  const estado = estadoCumplimiento(pct);
-  return { estado, pct, ...ESTADO_META[estado] };
-}
-
 // ----------------------------------------------------------------
 // Reglas automatizadas (Sección VI del documento)
 // ----------------------------------------------------------------
