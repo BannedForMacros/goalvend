@@ -1,26 +1,183 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  /* GoalVend brand tokens (extraídos del logo) */
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-cyan: var(--brand-cyan);
+  --color-brand-green: var(--brand-green);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-magenta: var(--brand-magenta);
+  --color-brand-purple: var(--brand-purple);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* Paleta de marca GoalVend (del logo.jpeg) */
+  --brand-navy: #001878;
+  --brand-blue: #0060c0;
+  --brand-cyan: #0090c0;
+  --brand-green: #009060;
+  --brand-orange: #f09000;
+  --brand-magenta: #c00090;
+  --brand-purple: #7818c0;
+
+  --background: #ffffff;
+  --foreground: #0a1230;
+  --card: #ffffff;
+  --card-foreground: #0a1230;
+  --popover: #ffffff;
+  --popover-foreground: #0a1230;
+  --primary: #001878;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1fb;
+  --secondary-foreground: #001878;
+  --muted: #f3f5fb;
+  --muted-foreground: #5b6486;
+  --accent: #e7eefb;
+  --accent-foreground: #001878;
+  --destructive: #c00090;
+  --border: #e2e6f3;
+  --input: #e2e6f3;
+  --ring: #0060c0;
+
+  /* Estados semáforo KPI */
+  --success: #009060;
+  --success-foreground: #ffffff;
+  --warning: #f09000;
+  --warning-foreground: #ffffff;
+  --danger: #c00090;
+  --danger-foreground: #ffffff;
+
+  /* Gráficos: paleta del logo */
+  --chart-1: #0060c0;
+  --chart-2: #0090c0;
+  --chart-3: #009060;
+  --chart-4: #f09000;
+  --chart-5: #c00090;
+
+  --radius: 0.7rem;
+
+  /* Sidebar con identidad de marca (navy) */
+  --sidebar: #001253;
+  --sidebar-foreground: #d8e0f7;
+  --sidebar-primary: #0078d0;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #0a2474;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #16307e;
+  --sidebar-ring: #0090c0;
+}
+
+.dark {
+  --brand-navy: #2a4bd0;
+  --brand-blue: #3b8bf0;
+  --brand-cyan: #2bb0e0;
+  --brand-green: #1cc483;
+  --brand-orange: #ffab33;
+  --brand-magenta: #e84bc0;
+  --brand-purple: #a04bf0;
+
+  --background: #070b1c;
+  --foreground: #e8edfb;
+  --card: #0d1430;
+  --card-foreground: #e8edfb;
+  --popover: #0d1430;
+  --popover-foreground: #e8edfb;
+  --primary: #3b8bf0;
+  --primary-foreground: #04122e;
+  --secondary: #16203f;
+  --secondary-foreground: #e8edfb;
+  --muted: #131c38;
+  --muted-foreground: #94a0c4;
+  --accent: #1a2750;
+  --accent-foreground: #e8edfb;
+  --destructive: #e84bc0;
+  --border: #1d2950;
+  --input: #1d2950;
+  --ring: #3b8bf0;
+
+  --success: #1cc483;
+  --success-foreground: #04122e;
+  --warning: #ffab33;
+  --warning-foreground: #04122e;
+  --danger: #e84bc0;
+  --danger-foreground: #04122e;
+
+  --chart-1: #3b8bf0;
+  --chart-2: #2bb0e0;
+  --chart-3: #1cc483;
+  --chart-4: #ffab33;
+  --chart-5: #e84bc0;
+
+  --sidebar: #060a1a;
+  --sidebar-foreground: #c4cdec;
+  --sidebar-primary: #3b8bf0;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #131e42;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1a274e;
+  --sidebar-ring: #2bb0e0;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
