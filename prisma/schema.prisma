@@ -1,7 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// GoalVend — Plataforma inteligente de gestión comercial y metas de ventas
+// Modelo de datos del dominio (monolito modular)
 
 generator client {
   provider = "prisma-client"
@@ -10,4 +8,204 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// Enums
+// ----------------------------------------------------------------------------
+
+enum Rol {
+  ADMIN
+  GERENTE
+  SUPERVISOR
+  VENDEDOR
+  MARKETING
+}
+
+enum TipoDocumento {
+  DNI
+  RUC
+}
+
+enum Segmento {
+  CORPORATIVO
+  PYME
+  MINORISTA
+  EMPRENDEDOR
+  NUEVO
+}
+
+enum NivelActividad {
+  ALTO
+  MEDIO
+  BAJO
+  INACTIVO
+}
+
+enum TipoMeta {
+  INDIVIDUAL
+  GRUPAL
+}
+
+enum PeriodoMeta {
+  MENSUAL
+  TRIMESTRAL
+}
+
+// Semáforo de cumplimiento (Módulo 4)
+enum EstadoKpi {
+  ALTO // 🟢 Alto desempeño
+  MODERADO // 🟡 Rendimiento moderado
+  BAJO // 🔴 Bajo cumplimiento
+}
+
+enum NivelAlerta {
+  INFO
+  ADVERTENCIA
+  CRITICO
+}
+
+// ----------------------------------------------------------------------------
+// Usuarios y autenticación (roles)
+// ----------------------------------------------------------------------------
+
+model Usuario {
+  id            String   @id @default(cuid())
+  nombre        String
+  email         String   @unique
+  passwordHash  String
+  rol           Rol      @default(VENDEDOR)
+  activo        Boolean  @default(true)
+  telefono      String?
+  avatarUrl     String?
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  ventas  Venta[]
+  metas   Meta[]
+  alertas Alerta[]
+
+  @@index([rol])
+  @@map("usuarios")
+}
+
+// ----------------------------------------------------------------------------
+// Módulo 1: Gestión de clientes
+// ----------------------------------------------------------------------------
+
+model Cliente {
+  id             String         @id @default(cuid())
+  razonSocial    String
+  tipoDocumento  TipoDocumento  @default(DNI)
+  documento      String         @unique
+  segmento       Segmento       @default(NUEVO)
+  nivelActividad NivelActividad @default(MEDIO)
+  email          String?
+  telefono       String?
+  direccion      String?
+  activo         Boolean        @default(true)
+  creadoEn       DateTime       @default(now())
+  actualizadoEn  DateTime       @updatedAt
+
+  ventas Venta[]
+
+  @@index([segmento])
+  @@index([nivelActividad])
+  @@map("clientes")
+}
+
+// ----------------------------------------------------------------------------
+// Catálogo de productos / servicios
+// ----------------------------------------------------------------------------
+
+model Producto {
+  id            String   @id @default(cuid())
+  nombre        String
+  sku           String?  @unique
+  descripcion   String?
+  precio        Decimal  @db.Decimal(12, 2)
+  categoria     String?
+  activo        Boolean  @default(true)
+  creadoEn      DateTime @default(now())
+  actualizadoEn DateTime @updatedAt
+
+  ventas Venta[]
+
+  @@map("productos")
+}
+
+// ----------------------------------------------------------------------------
+// Módulo 2: Ventas inteligentes
+// ----------------------------------------------------------------------------
+
+model Venta {
+  id             String   @id @default(cuid())
+  cliente        Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId      String
+  vendedor       Usuario  @relation(fields: [vendedorId], references: [id])
+  vendedorId     String
+  producto       Producto @relation(fields: [productoId], references: [id])
+  productoId     String
+  cantidad       Int
+  precioUnitario Decimal  @db.Decimal(12, 2)
+  total          Decimal  @db.Decimal(14, 2)
+  fecha          DateTime @default(now())
+  creadoEn       DateTime @default(now())
+
+  @@index([vendedorId])
+  @@index([clienteId])
+  @@index([fecha])
+  @@map("ventas")
+}
+
+// ----------------------------------------------------------------------------
+// Módulo 3: Metas estratégicas
+// ----------------------------------------------------------------------------
+
+model Meta {
+  id            String      @id @default(cuid())
+  nombre        String
+  tipo          TipoMeta    @default(INDIVIDUAL)
+  periodo       PeriodoMeta @default(MENSUAL)
+  montoObjetivo Decimal     @db.Decimal(14, 2)
+  anio          Int
+  mes           Int? // 1-12 cuando periodo = MENSUAL
+  trimestre     Int? // 1-4 cuando periodo = TRIMESTRAL
+  fechaInicio   DateTime
+  fechaFin      DateTime
+  // null = meta grupal (toda la empresa)
+  vendedor      Usuario?    @relation(fields: [vendedorId], references: [id])
+  vendedorId    String?
+  activa        Boolean     @default(true)
+  creadoEn      DateTime    @default(now())
+  actualizadoEn DateTime    @updatedAt
+
+  alertas Alerta[]
+
+  @@index([vendedorId])
+  @@index([anio])
+  @@map("metas")
+}
+
+// ----------------------------------------------------------------------------
+// Módulo de alertas (lógica automatizada)
+// ----------------------------------------------------------------------------
+
+model Alerta {
+  id         String      @id @default(cuid())
+  titulo     String
+  mensaje    String
+  nivel      NivelAlerta @default(INFO)
+  estadoKpi  EstadoKpi?
+  leida      Boolean     @default(false)
+  meta       Meta?       @relation(fields: [metaId], references: [id])
+  metaId     String?
+  vendedor   Usuario?    @relation(fields: [vendedorId], references: [id])
+  vendedorId String?
+  creadoEn   DateTime    @default(now())
+
+  @@index([leida])
+  @@index([vendedorId])
+  @@map("alertas")
 }
