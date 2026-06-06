@@ -38,6 +38,7 @@ export const rolLabel = {
   MARKETING: "Marketing",
 } as const;
 
+export const rolOptions = Object.entries(rolLabel).map(([value, label]) => ({ value, label }));
 export const segmentoOptions = Object.entries(segmentoLabel).map(([value, label]) => ({ value, label }));
 export const nivelActividadOptions = Object.entries(nivelActividadLabel).map(([value, label]) => ({ value, label }));
 export const tipoDocumentoOptions = Object.entries(tipoDocumentoLabel).map(([value, label]) => ({ value, label }));
