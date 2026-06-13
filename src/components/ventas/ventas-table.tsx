@@ -2,10 +2,11 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Search, Trash2 } from "lucide-react";
+import { Eye, Search, Trash2 } from "lucide-react";
 import { eliminarVenta } from "@/modules/ventas/actions";
 import type { VentaRow } from "@/modules/ventas/queries";
 import { formatMoneda, formatFecha } from "@/lib/format";
+import { VentaDetalleDialog } from "./venta-detalle-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,7 @@ import {
 
 export function VentasTable({ ventas }: { ventas: VentaRow[] }) {
   const [query, setQuery] = useState("");
+  const [detalle, setDetalle] = useState<VentaRow | null>(null);
   const [eliminar, setEliminar] = useState<VentaRow | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -73,7 +75,7 @@ export function VentasTable({ ventas }: { ventas: VentaRow[] }) {
               <TableHead>Vendedor</TableHead>
               <TableHead className="text-right">Cant.</TableHead>
               <TableHead className="text-right">Total</TableHead>
-              <TableHead className="w-12"></TableHead>
+              <TableHead className="w-20"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -95,14 +97,26 @@ export function VentasTable({ ventas }: { ventas: VentaRow[] }) {
                     {formatMoneda(v.total)}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-8 text-danger hover:text-danger"
-                      onClick={() => setEliminar(v)}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8"
+                        title="Ver detalle"
+                        onClick={() => setDetalle(v)}
+                      >
+                        <Eye className="size-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 text-danger hover:text-danger"
+                        title="Eliminar"
+                        onClick={() => setEliminar(v)}
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
@@ -110,6 +124,12 @@ export function VentasTable({ ventas }: { ventas: VentaRow[] }) {
           </TableBody>
         </Table>
       </div>
+
+      <VentaDetalleDialog
+        venta={detalle}
+        open={!!detalle}
+        onOpenChange={(o) => !o && setDetalle(null)}
+      />
 
       <Dialog open={!!eliminar} onOpenChange={(o) => !o && setEliminar(null)}>
         <DialogContent>

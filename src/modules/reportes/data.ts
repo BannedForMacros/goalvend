@@ -3,10 +3,12 @@ import { getMetasConCumplimiento } from "@/modules/metas/queries";
 import { getRendimientoVendedores } from "@/modules/rendimiento/queries";
 import { getClientes } from "@/modules/clientes/queries";
 import { formatFecha } from "@/lib/format";
+import type { Rango } from "@/lib/rango-fechas";
 import { ESTADO_CONFIG } from "@/components/kpi/estado";
 import { tipoMetaLabel, periodoMetaLabel, segmentoLabel, nivelActividadLabel } from "@/lib/enums";
+import { type ReporteTipo } from "./catalogo";
 
-export type ReporteTipo = "ventas" | "metas" | "rendimiento" | "clientes";
+export { REPORTES, type ReporteTipo } from "./catalogo";
 
 export interface ReporteDef {
   titulo: string;
@@ -14,19 +16,12 @@ export interface ReporteDef {
   filas: Record<string, string | number>[];
 }
 
-export const REPORTES: { tipo: ReporteTipo; nombre: string; descripcion: string }[] = [
-  { tipo: "ventas", nombre: "Ventas por periodo", descripcion: "Detalle de operaciones comerciales registradas." },
-  { tipo: "metas", nombre: "Cumplimiento de metas", descripcion: "Indicadores KPI y cumplimiento por meta." },
-  { tipo: "rendimiento", nombre: "Rendimiento de vendedores", descripcion: "Productividad comercial del mes." },
-  { tipo: "clientes", nombre: "Cartera de clientes", descripcion: "Listado de la cartera comercial." },
-];
-
-export async function buildReporte(tipo: ReporteTipo): Promise<ReporteDef> {
+export async function buildReporte(tipo: ReporteTipo, rango?: Rango, periodoLabel?: string): Promise<ReporteDef> {
   switch (tipo) {
     case "ventas": {
-      const ventas = await getVentas(1000);
+      const ventas = await getVentas(rango, 5000);
       return {
-        titulo: "Reporte de Ventas",
+        titulo: periodoLabel ? `Reporte de Ventas · ${periodoLabel}` : "Reporte de Ventas",
         columnas: [
           { header: "Fecha", key: "fecha", width: 14 },
           { header: "Cliente", key: "cliente", width: 32 },

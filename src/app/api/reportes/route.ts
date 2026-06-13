@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { buildReporte, type ReporteTipo } from "@/modules/reportes/data";
 import { buildExcel } from "@/modules/reportes/excel";
 import { buildPdf } from "@/modules/reportes/pdf";
+import { resolverRango } from "@/lib/rango-fechas";
 
 export const runtime = "nodejs";
 
@@ -22,7 +23,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Reporte inválido" }, { status: 400 });
   }
 
-  const def = await buildReporte(tipo);
+  // El rango de fechas aplica a los reportes transaccionales (ventas).
+  const { rango, label } = resolverRango({
+    preset: searchParams.get("preset") ?? undefined,
+    desde: searchParams.get("desde") ?? undefined,
+    hasta: searchParams.get("hasta") ?? undefined,
+  });
+
+  const def = await buildReporte(tipo, tipo === "ventas" ? rango : undefined, tipo === "ventas" ? label : undefined);
   const fechaSlug = new Date().toISOString().slice(0, 10);
 
   if (formato === "excel") {

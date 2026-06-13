@@ -1,32 +1,28 @@
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
+import { whereFecha, type Rango } from "@/lib/rango-fechas";
 
 export interface VentaRow {
   id: string;
   fecha: string;
   cliente: string;
+  clienteDocumento: string;
   producto: string;
+  productoCategoria: string;
   vendedor: string;
   cantidad: number;
   precioUnitario: number;
   total: number;
 }
 
-function rangoMesActual() {
-  const now = new Date();
-  return {
-    inicio: new Date(now.getFullYear(), now.getMonth(), 1),
-    fin: new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999),
-  };
-}
-
-export async function getVentas(limit = 100): Promise<VentaRow[]> {
+export async function getVentas(rango?: Rango, limit = 200): Promise<VentaRow[]> {
   const ventas = await prisma.venta.findMany({
+    where: rango ? whereFecha(rango) : {},
     orderBy: { fecha: "desc" },
     take: limit,
     include: {
-      cliente: { select: { razonSocial: true } },
-      producto: { select: { nombre: true } },
+      cliente: { select: { razonSocial: true, documento: true } },
+      producto: { select: { nombre: true, categoria: true } },
       vendedor: { select: { nombre: true } },
     },
   });
@@ -35,7 +31,9 @@ export async function getVentas(limit = 100): Promise<VentaRow[]> {
     id: v.id,
     fecha: v.fecha.toISOString(),
     cliente: v.cliente.razonSocial,
+    clienteDocumento: v.cliente.documento,
     producto: v.producto.nombre,
+    productoCategoria: v.producto.categoria ?? "",
     vendedor: v.vendedor.nombre,
     cantidad: v.cantidad,
     precioUnitario: toNumber(v.precioUnitario),
@@ -43,19 +41,17 @@ export async function getVentas(limit = 100): Promise<VentaRow[]> {
   }));
 }
 
-export async function getVentasResumen() {
-  const { inicio, fin } = rangoMesActual();
-  const [aggMes, countMes, countTotal] = await Promise.all([
-    prisma.venta.aggregate({ _sum: { total: true }, where: { fecha: { gte: inicio, lte: fin } } }),
-    prisma.venta.count({ where: { fecha: { gte: inicio, lte: fin } } }),
-    prisma.venta.count(),
+export async function getVentasResumen(rango?: Rango) {
+  const where = rango ? whereFecha(rango) : {};
+  const [agg, count] = await Promise.all([
+    prisma.venta.aggregate({ _sum: { total: true }, where }),
+    prisma.venta.count({ where }),
   ]);
-  const totalMes = toNumber(aggMes._sum.total);
+  const total = toNumber(agg._sum.total);
   return {
-    totalMes,
-    operacionesMes: countMes,
-    ticketPromedio: countMes > 0 ? totalMes / countMes : 0,
-    operacionesTotal: countTotal,
+    total,
+    operaciones: count,
+    ticketPromedio: count > 0 ? total / count : 0,
   };
 }
 
